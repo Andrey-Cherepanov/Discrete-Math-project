@@ -5,10 +5,11 @@
 
 using namespace std;
 
-vector<vector<int>> read_matrix(int n, int m);
+vector<vector<int>> read_matrix(int n, int m, ifstream* in);
 short is_Euler(int n, int m, vector<vector<int>> matrix);
 string Chain(int n, int m, vector<vector<int>> matrix);
 string Cycle(int n, int m, vector<vector<int>> matrix);
+bool is_bridge(int n, int m, vector<vector<int>> matrix, int v);
 
 int main() {
 	ofstream fout;
@@ -17,7 +18,8 @@ int main() {
 	int n, m;
 	fin >> n; fin >> m;
 	fin.close();
-	vector<vector<int>> matrix = read_matrix(n, m);
+	ifstream* in = &fin;
+	vector<vector<int>> matrix = read_matrix(n, m, in);
 	short f = is_Euler(n, m, matrix);
 	if (f == 0) {
 		fout << "Nothing";
@@ -30,15 +32,14 @@ int main() {
 	}
 }
 
-vector<vector<int>> read_matrix(int n, int m)
+vector<vector<int>> read_matrix(int n, int m, ifstream* in)
 {
 	int buf;
-	ifstream fin("input.txt"); fin >> buf; fin >> buf;
+	*in >> buf; *in >> buf;
 	vector<vector<int>> matrix(n, vector<int>(m, 0));
 	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) fin >> matrix[i][j];
+		for (int j = 0; j < m; j++) *in >> matrix[i][j];
 	}
-	fin.close();
 	return matrix;
 }
 
@@ -66,4 +67,16 @@ string Chain(int n, int m, vector<vector<int>> matrix)
 string Cycle(int n, int m, vector<vector<int>> matrix)
 {
 	return "";
+}
+
+bool is_bridge(int n, int m, vector<vector<int>> matrix, int v)
+{
+	for (int i = 0; i < m; i++) {
+		//Удаляем изграфа все ребра, инцидентные указанной вершине
+		if (matrix[v][i] == 1) {
+			for (int j = 0; j < n; j++) matrix[j][i] = 0;
+		}
+	}
+
+	return false;
 }
